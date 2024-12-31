@@ -21,6 +21,7 @@
         .container h1 {
             text-align: center;
             font-size: 24px;
+            font-weight: bold;
         }
         .form-group {
             margin-bottom: 15px;
@@ -29,7 +30,6 @@
             align-items: center;
         }
         .form-group label {
-            font-weight: bold;
             margin-right: 10px;
             flex: 1;
         }
@@ -42,7 +42,6 @@
         }
         .header-row {
             display: flex;
-            font-weight: bold;
             margin-bottom: 5px;
             text-align: center;
         }
@@ -80,6 +79,7 @@
         }
         .result p {
             font-size: 14px;
+            font-weight: normal;
         }
         .result #stopLoss {
             color: red;
@@ -215,17 +215,17 @@
             records.forEach((record, index) => {
                 const price = parseFloat(record.querySelector(`#price${index + 1}`).value) || 0;
                 const amount = parseFloat(record.querySelector(`#amount${index + 1}`).value) || 0;
-                const quantity = amount / price || 0;
+                const quantity = parseFloat((amount / price).toFixed(8)) || 0;
 
                 totalAmount += amount;
                 totalQuantity += quantity;
             });
 
-            const averagePrice = totalQuantity ? (totalAmount / totalQuantity) : 0;
-            const stopLoss = maxLoss && totalQuantity ? (averagePrice - maxLoss / totalQuantity) : 0;
+            const averagePrice = totalQuantity ? (totalAmount / totalQuantity).toFixed(8) : 0;
+            const stopLoss = maxLoss && totalQuantity ? (averagePrice - maxLoss / totalQuantity).toFixed(8) : '无效';
 
-            document.getElementById('averagePrice').textContent = averagePrice.toFixed(8);
-            document.getElementById('stopLoss').textContent = stopLoss > 0 ? stopLoss.toFixed(8) : '无效';
+            document.getElementById('averagePrice').textContent = averagePrice;
+            document.getElementById('stopLoss').textContent = stopLoss;
             document.getElementById('totalAmount').textContent = totalAmount.toFixed(8);
         }
 
