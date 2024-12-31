@@ -38,12 +38,17 @@
             padding: 10px;
             border-radius: 5px;
         }
-        .record input, .record select {
-            flex: 1;
+        .record-number {
+            font-weight: bold;
+            width: 20px;
+        }
+        .record input {
+            width: calc(33.33% - 10px);
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 3px;
             font-size: 14px;
+            text-align: center;
         }
         .result {
             margin-top: 20px;
@@ -81,14 +86,10 @@
 
         <div id="records">
             <div class="record">
-                <label>价格 (USD):</label>
-                <input type="number" id="price1" placeholder="请输入价格">
-
-                <label>买入数量:</label>
-                <input type="number" id="quantity1" placeholder="请输入数量">
-
-                <label>成交金额 (USD):</label>
-                <input type="number" id="amount1" placeholder="自动计算或手动输入">
+                <span class="record-number">1</span>
+                <input type="number" id="price1" placeholder="价格 (USD)">
+                <input type="number" id="quantity1" placeholder="买入数量">
+                <input type="number" id="amount1" placeholder="成交金额 (USD)">
             </div>
         </div>
 
@@ -108,14 +109,10 @@
             const newRecord = document.createElement('div');
             newRecord.className = 'record';
             newRecord.innerHTML = `
-                <label>价格 (USD):</label>
-                <input type="number" id="price${recordCount}" placeholder="请输入价格">
-
-                <label>买入数量:</label>
-                <input type="number" id="quantity${recordCount}" placeholder="请输入数量">
-
-                <label>成交金额 (USD):</label>
-                <input type="number" id="amount${recordCount}" placeholder="自动计算或手动输入">
+                <span class="record-number">${recordCount}</span>
+                <input type="number" id="price${recordCount}" placeholder="价格 (USD)">
+                <input type="number" id="quantity${recordCount}" placeholder="买入数量">
+                <input type="number" id="amount${recordCount}" placeholder="成交金额 (USD)">
             `;
             document.getElementById('records').appendChild(newRecord);
 
@@ -167,12 +164,6 @@
 
             document.getElementById('averagePrice').textContent = averagePrice.toFixed(4);
             document.getElementById('stopLoss').textContent = stopLoss > 0 ? stopLoss.toFixed(4) : '无效';
-
-            // Update quantity display with currency if provided
-            for (let i = 1; i <= recordCount; i++) {
-                const quantityLabel = document.querySelector(`#quantity${i}`).previousElementSibling;
-                quantityLabel.textContent = `买入数量${currency ? ` (${currency})` : ''}:`;
-            }
         }
 
         document.addEventListener('input', calculate);
