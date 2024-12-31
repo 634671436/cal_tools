@@ -74,7 +74,7 @@
 
         <div class="form-group">
             <label for="maxLoss">最大承受受损金额 (USD):</label>
-            <input type="number" id="maxLoss" placeholder="请输入最大承受金额">
+            <input type="number" id="maxLoss" placeholder="请输入最大承受受损金额">
         </div>
 
         <div id="records">
@@ -156,10 +156,10 @@
             }
 
             const averagePrice = totalQuantity ? (totalAmount / totalQuantity) : 0;
-            const stopLoss = maxLoss ? Math.min(maxLoss / totalQuantity, averagePrice * 0.95) : averagePrice * 0.95;
+            const stopLoss = maxLoss && totalQuantity ? (averagePrice - maxLoss / totalQuantity) : 0;
 
             document.getElementById('averagePrice').textContent = averagePrice.toFixed(4);
-            document.getElementById('stopLoss').textContent = stopLoss.toFixed(4);
+            document.getElementById('stopLoss').textContent = stopLoss > 0 ? stopLoss.toFixed(4) : '无效';
         }
 
         document.addEventListener('input', calculate);
