@@ -76,6 +76,14 @@
             background: #f9f9f9;
             border: 1px solid #ddd;
             border-radius: 5px;
+            font-size: 14px;
+        }
+        .result p {
+            font-size: 14px;
+        }
+        .result #stopLoss {
+            color: red;
+            font-weight: bold;
         }
         .add-record {
             display: block;
@@ -104,7 +112,7 @@
 
         <div class="form-group">
             <label for="currency">币种 (可选):</label>
-            <input type="text" id="currency" placeholder="请输入币种">
+            <input type="text" id="currency" placeholder="请输入币种" oninput="updateCurrency()">
         </div>
 
         <div class="form-group">
@@ -142,12 +150,13 @@
 
         document.querySelector('.add-record').addEventListener('click', () => {
             recordCount++;
+            const currency = document.getElementById('currency').value || '';
             const newRecord = document.createElement('div');
             newRecord.className = 'record';
             newRecord.innerHTML = `
                 <span class="record-number">${recordCount}</span>
                 <input type="number" id="price${recordCount}" placeholder="价格 (USD)">
-                <input type="number" id="quantity${recordCount}" placeholder="买入数量">
+                <input type="number" id="quantity${recordCount}" placeholder="买入数量${currency ? ` (${currency})` : ''}">
                 <input type="number" id="amount${recordCount}" placeholder="成交金额 (USD)">
                 <button class="delete-record" onclick="deleteRecord(this)">删除</button>
             `;
@@ -217,6 +226,15 @@
             document.getElementById('averagePrice').textContent = averagePrice.toFixed(4);
             document.getElementById('stopLoss').textContent = stopLoss > 0 ? stopLoss.toFixed(4) : '无效';
             document.getElementById('totalAmount').textContent = totalAmount.toFixed(4);
+        }
+
+        function updateCurrency() {
+            const currency = document.getElementById('currency').value;
+            const records = document.querySelectorAll('.record input[id^="quantity"]');
+            records.forEach((input) => {
+                const placeholder = input.getAttribute('placeholder').split(' ')[0];
+                input.setAttribute('placeholder', `${placeholder} ${currency ? `(${currency})` : ''}`);
+            });
         }
 
         document.addEventListener('input', calculate);
