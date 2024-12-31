@@ -187,19 +187,19 @@
 
             priceInput.addEventListener('input', () => {
                 if (priceInput.value && quantityInput.value) {
-                    amountInput.value = (parseFloat(priceInput.value) * parseFloat(quantityInput.value)).toFixed(4);
+                    amountInput.value = (parseFloat(priceInput.value) * parseFloat(quantityInput.value)).toFixed(8);
                 }
             });
 
             quantityInput.addEventListener('input', () => {
                 if (priceInput.value && quantityInput.value) {
-                    amountInput.value = (parseFloat(priceInput.value) * parseFloat(quantityInput.value)).toFixed(4);
+                    amountInput.value = (parseFloat(priceInput.value) * parseFloat(quantityInput.value)).toFixed(8);
                 }
             });
 
             amountInput.addEventListener('input', () => {
                 if (priceInput.value && amountInput.value) {
-                    quantityInput.value = (parseFloat(amountInput.value) / parseFloat(priceInput.value)).toFixed(4);
+                    quantityInput.value = (parseFloat(amountInput.value) / parseFloat(priceInput.value)).toFixed(8);
                 }
             });
         }
@@ -214,18 +214,19 @@
             const records = document.querySelectorAll('.record');
             records.forEach((record, index) => {
                 const price = parseFloat(record.querySelector(`#price${index + 1}`).value) || 0;
-                const quantity = parseFloat(record.querySelector(`#quantity${index + 1}`).value) || 0;
+                const amount = parseFloat(record.querySelector(`#amount${index + 1}`).value) || 0;
+                const quantity = amount / price || 0;
 
-                totalAmount += price * quantity;
+                totalAmount += amount;
                 totalQuantity += quantity;
             });
 
             const averagePrice = totalQuantity ? (totalAmount / totalQuantity) : 0;
             const stopLoss = maxLoss && totalQuantity ? (averagePrice - maxLoss / totalQuantity) : 0;
 
-            document.getElementById('averagePrice').textContent = averagePrice.toFixed(4);
-            document.getElementById('stopLoss').textContent = stopLoss > 0 ? stopLoss.toFixed(4) : '无效';
-            document.getElementById('totalAmount').textContent = totalAmount.toFixed(4);
+            document.getElementById('averagePrice').textContent = averagePrice.toFixed(8);
+            document.getElementById('stopLoss').textContent = stopLoss > 0 ? stopLoss.toFixed(8) : '无效';
+            document.getElementById('totalAmount').textContent = totalAmount.toFixed(8);
         }
 
         function updateCurrency() {
