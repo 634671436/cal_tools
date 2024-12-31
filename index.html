@@ -3,10 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My GitHub Pages</title>
+    <title>现货均价计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .container h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .record {
+            margin-bottom: 10px;
+            border: 1px dashed #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .add-record {
+            display: block;
+            margin: 10px 0;
+            padding: 8px;
+            background: #007bff;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My GitHub Page</h1>
-    <p>This is a demo page hosted on GitHub Pages.</p>
+    <div class="container">
+        <h1>现货均价计算器</h1>
+
+        <div class="form-group">
+            <label for="currency">币种:</label>
+            <select id="currency">
+                <option value="BTC">BTC</option>
+                <option value="ETH">ETH</option>
+                <option value="USDT">USDT</option>
+            </select>
+        </div>
+
+        <div id="records">
+            <div class="record">
+                <div class="form-group">
+                    <label for="price1">价格 (USD):</label>
+                    <input type="number" id="price1" placeholder="请输入价格">
+                </div>
+
+                <div class="form-group">
+                    <label>计算方式:</label>
+                    <select class="calculation-type" data-index="1">
+                        <option value="quantity">买入数量</option>
+                        <option value="amount">总金额</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label id="label1">买入数量:</label>
+                    <input type="number" id="input1" placeholder="请输入数量或金额">
+                </div>
+            </div>
+        </div>
+
+        <button class="add-record">+ 添加记录</button>
+
+        <div class="result">
+            <p>买入均价 (USD): <span id="averagePrice">-</span></p>
+            <p>止损价格 (USD): <span id="stopLoss">-</span></p>
+        </div>
+    </div>
+
+    <script>
+        let recordCount = 1;
+
+        document.querySelector('.add-record').addEventListener('click', () => {
+            recordCount++;
+            const newRecord = document.createElement('div');
+            newRecord.className = 'record';
+            newRecord.innerHTML = `
+                <div class="form-group">
+                    <label for="price${recordCount}">价格 (USD):</label>
+                    <input type="number" id="price${recordCount}" placeholder="请输入价格">
+                </div>
+
+                <div class="form-group">
+                    <label>计算方式:</label>
+                    <select class="calculation-type" data-index="${recordCount}">
+                        <option value="quantity">买入数量</option>
+                        <option value="amount">总金额</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label id="label${recordCount}">买入数量:</label>
+                    <input type="number" id="input${recordCount}" placeholder="请输入数量或金额">
+                </div>
+            `;
+            document.getElementById('records').appendChild(newRecord);
+        });
+
+        function calculate() {
+            let totalAmount = 0;
+            let totalQuantity = 0;
+
+            for (let i = 1; i <= recordCount; i++) {
+                const price = parseFloat(document.getElementById(`price${i}`).value) || 0;
+                const input = parseFloat(document.getElementById(`input${i}`).value) || 0;
+                const calculationType = document.querySelector(`.calculation-type[data-index="${i}"]`).value;
+
+                if (calculationType === 'quantity') {
+                    totalAmount += price * input;
+                    totalQuantity += input;
+                } else if (calculationType === 'amount') {
+                    totalAmount += input;
+                    totalQuantity += input / price;
+                }
+            }
+
+            const averagePrice = totalQuantity ? (totalAmount / totalQuantity) : 0;
+            const stopLoss = averagePrice * 0.95; // 假设止损价格为均价的95%
+
+            document.getElementById('averagePrice').textContent = averagePrice.toFixed(4);
+            document.getElementById('stopLoss').textContent = stopLoss.toFixed(4);
+        }
+
+        document.addEventListener('input', calculate);
+    </script>
 </body>
 </html>
+
