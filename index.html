@@ -26,22 +26,24 @@
             margin-bottom: 15px;
         }
         .form-group label {
-            display: block;
-            margin-bottom: 5px;
             font-weight: bold;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            font-size: 14px;
+            margin-right: 10px;
         }
         .record {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 10px;
             border: 1px dashed #ccc;
             padding: 10px;
             border-radius: 5px;
+        }
+        .record input, .record select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
         }
         .result {
             margin-top: 20px;
@@ -79,23 +81,14 @@
 
         <div id="records">
             <div class="record">
-                <div class="form-group">
-                    <label for="price1">价格 (USD):</label>
-                    <input type="number" id="price1" placeholder="请输入价格">
-                </div>
+                <label>价格 (USD):</label>
+                <input type="number" id="price1" placeholder="请输入价格">
 
-                <div class="form-group">
-                    <label>计算方式:</label>
-                    <select class="calculation-type" data-index="1">
-                        <option value="quantity">买入数量</option>
-                        <option value="amount">总金额</option>
-                    </select>
-                </div>
+                <label>买入数量:</label>
+                <input type="number" id="quantity1" placeholder="请输入数量">
 
-                <div class="form-group">
-                    <label id="label1">买入数量:</label>
-                    <input type="number" id="input1" placeholder="请输入数量或金额">
-                </div>
+                <label>成交金额 (USD):</label>
+                <input type="number" id="amount1" placeholder="自动计算或手动输入">
             </div>
         </div>
 
@@ -115,44 +108,58 @@
             const newRecord = document.createElement('div');
             newRecord.className = 'record';
             newRecord.innerHTML = `
-                <div class="form-group">
-                    <label for="price${recordCount}">价格 (USD):</label>
-                    <input type="number" id="price${recordCount}" placeholder="请输入价格">
-                </div>
+                <label>价格 (USD):</label>
+                <input type="number" id="price${recordCount}" placeholder="请输入价格">
 
-                <div class="form-group">
-                    <label>计算方式:</label>
-                    <select class="calculation-type" data-index="${recordCount}">
-                        <option value="quantity">买入数量</option>
-                        <option value="amount">总金额</option>
-                    </select>
-                </div>
+                <label>买入数量:</label>
+                <input type="number" id="quantity${recordCount}" placeholder="请输入数量">
 
-                <div class="form-group">
-                    <label id="label${recordCount}">买入数量:</label>
-                    <input type="number" id="input${recordCount}" placeholder="请输入数量或金额">
-                </div>
+                <label>成交金额 (USD):</label>
+                <input type="number" id="amount${recordCount}" placeholder="自动计算或手动输入">
             `;
             document.getElementById('records').appendChild(newRecord);
+
+            addEventListeners(recordCount);
         });
+
+        function addEventListeners(index) {
+            const priceInput = document.getElementById(`price${index}`);
+            const quantityInput = document.getElementById(`quantity${index}`);
+            const amountInput = document.getElementById(`amount${index}`);
+
+            priceInput.addEventListener('input', () => {
+                if (priceInput.value && quantityInput.value) {
+                    amountInput.value = (parseFloat(priceInput.value) * parseFloat(quantityInput.value)).toFixed(4);
+                }
+            });
+
+            quantityInput.addEventListener('input', () => {
+                if (priceInput.value && quantityInput.value) {
+                    amountInput.value = (parseFloat(priceInput.value) * parseFloat(quantityInput.value)).toFixed(4);
+                }
+            });
+
+            amountInput.addEventListener('input', () => {
+                if (priceInput.value && amountInput.value) {
+                    quantityInput.value = (parseFloat(amountInput.value) / parseFloat(priceInput.value)).toFixed(4);
+                }
+            });
+        }
+
+        addEventListeners(1);
 
         function calculate() {
             let totalAmount = 0;
             let totalQuantity = 0;
             const maxLoss = parseFloat(document.getElementById('maxLoss').value) || 0;
+            const currency = document.getElementById('currency').value;
 
             for (let i = 1; i <= recordCount; i++) {
                 const price = parseFloat(document.getElementById(`price${i}`).value) || 0;
-                const input = parseFloat(document.getElementById(`input${i}`).value) || 0;
-                const calculationType = document.querySelector(`.calculation-type[data-index="${i}"]`).value;
+                const quantity = parseFloat(document.getElementById(`quantity${i}`).value) || 0;
 
-                if (calculationType === 'quantity') {
-                    totalAmount += price * input;
-                    totalQuantity += input;
-                } else if (calculationType === 'amount') {
-                    totalAmount += input;
-                    totalQuantity += input / price;
-                }
+                totalAmount += price * quantity;
+                totalQuantity += quantity;
             }
 
             const averagePrice = totalQuantity ? (totalAmount / totalQuantity) : 0;
@@ -160,6 +167,12 @@
 
             document.getElementById('averagePrice').textContent = averagePrice.toFixed(4);
             document.getElementById('stopLoss').textContent = stopLoss > 0 ? stopLoss.toFixed(4) : '无效';
+
+            // Update quantity display with currency if provided
+            for (let i = 1; i <= recordCount; i++) {
+                const quantityLabel = document.querySelector(`#quantity${i}`).previousElementSibling;
+                quantityLabel.textContent = `买入数量${currency ? ` (${currency})` : ''}:`;
+            }
         }
 
         document.addEventListener('input', calculate);
