@@ -11,7 +11,7 @@
             padding: 0;
         }
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: auto;
             padding: 20px;
             border: 1px solid #ccc;
@@ -129,6 +129,7 @@
         <div class="result">
             <p>买入均价 (USD): <span id="averagePrice">-</span></p>
             <p>止损价格 (USD): <span id="stopLoss">-</span></p>
+            <p>买入总金额 (USD): <span id="totalAmount">-</span></p>
         </div>
     </div>
 
@@ -211,10 +212,11 @@
 
             document.getElementById('averagePrice').textContent = averagePrice.toFixed(4);
             document.getElementById('stopLoss').textContent = stopLoss > 0 ? stopLoss.toFixed(4) : '无效';
+            document.getElementById('totalAmount').textContent = totalAmount.toFixed(4);
         }
 
         document.addEventListener('input', calculate);
     </script>
 </body>
 </html>
-<!DOCTYPE html>
+
